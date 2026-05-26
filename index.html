@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CyberSec Journey | Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Syne:wght@400;600;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #080c10;
+      --surface: #0d1520;
+      --border: #1a2e44;
+      --accent: #00d4ff;
+      --accent2: #00ff9d;
+      --warn: #ff6b35;
+      --text: #c8d8e8;
+      --muted: #506070;
+      --mono: 'Share Tech Mono', monospace;
+      --sans: 'Syne', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── Scanline overlay ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 9999;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,212,255,0.015) 2px,
+        rgba(0,212,255,0.015) 4px
+      );
+      pointer-events: none;
+    }
+
+    /* ── Grid background ── */
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 2.5rem;
+      background: rgba(8,12,16,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: var(--mono);
+      color: var(--accent);
+      font-size: 0.85rem;
+      letter-spacing: 0.1em;
+    }
+    .nav-logo span { color: var(--accent2); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+
+    /* ── Sections ── */
+    section { position: relative; z-index: 1; }
+
+    /* ── Hero ── */
+    #hero {
+      min-height: 100vh;
+      display: flex; align-items: center;
+      padding: 8rem 2.5rem 4rem;
+      max-width: 1100px; margin: 0 auto;
+    }
+    .hero-inner { max-width: 720px; }
+    .hero-tag {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+    .hero-tag::before {
+      content: '';
+      display: inline-block; width: 32px; height: 1px;
+      background: var(--accent);
+    }
+    h1 {
+      font-family: var(--sans);
+      font-weight: 800;
+      font-size: clamp(2.8rem, 6vw, 5rem);
+      line-height: 1.05;
+      color: #fff;
+      margin-bottom: 1.5rem;
+    }
+    h1 em {
+      font-style: normal;
+      color: var(--accent);
+      position: relative;
+    }
+    h1 em::after {
+      content: '';
+      position: absolute; bottom: 4px; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+    .hero-desc {
+      font-size: 1.1rem;
+      color: var(--muted);
+      max-width: 540px;
+      margin-bottom: 2.5rem;
+      line-height: 1.8;
+    }
+    .hero-cta {
+      display: flex; gap: 1rem; flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.75rem 1.75rem;
+      border-radius: 4px;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: var(--bg);
+      border: 1px solid var(--accent);
+    }
+    .btn-primary:hover { background: transparent; color: var(--accent); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* terminal blink */
+    .cursor {
+      display: inline-block; width: 10px; height: 1.1em;
+      background: var(--accent); vertical-align: text-bottom;
+      animation: blink 1s step-end infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* ── Section wrappers ── */
+    .container { max-width: 1100px; margin: 0 auto; padding: 5rem 2.5rem; }
+    .section-label {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+    h2 {
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 3rem;
+      line-height: 1.15;
+    }
+
+    /* ── About ── */
+    #about { border-top: 1px solid var(--border); }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+    @media (max-width: 700px) { .about-grid { grid-template-columns: 1fr; gap: 2rem; } }
+    .about-text p {
+      color: var(--muted);
+      margin-bottom: 1rem;
+      line-height: 1.9;
+    }
+    .about-text p strong { color: var(--text); }
+    .about-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .stat-card:hover { border-color: var(--accent); }
+    .stat-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+    .stat-num {
+      font-family: var(--mono);
+      font-size: 2rem;
+      color: var(--accent);
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 0.4rem;
+    }
+    .stat-label {
+      font-size: 0.78rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Skills ── */
+    #skills { border-top: 1px solid var(--border); }
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    .skill-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      transition: border-color 0.25s, transform 0.25s;
+    }
+    .skill-card:hover { border-color: var(--accent2); transform: translateY(-3px); }
+    .skill-icon { font-size: 1.6rem; margin-bottom: 0.75rem; }
+    .skill-card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 0.5rem;
+    }
+    .skill-card p { font-size: 0.85rem; color: var(--muted); line-height: 1.7; }
+    .skill-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.85rem; }
+    .tag {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 3px;
+      background: rgba(0,212,255,0.08);
+      color: var(--accent);
+      border: 1px solid rgba(0,212,255,0.2);
+      letter-spacing: 0.05em;
+    }
+    .tag.green {
+      background: rgba(0,255,157,0.08);
+      color: var(--accent2);
+      border-color: rgba(0,255,157,0.2);
+    }
+    .tag.orange {
+      background: rgba(255,107,53,0.08);
+      color: var(--warn);
+      border-color: rgba(255,107,53,0.2);
+    }
+
+    /* ── Certs ── */
+    #certs { border-top: 1px solid var(--border); }
+    .certs-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
+    .cert-card {
+      display: flex; align-items: center; gap: 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      transition: border-color 0.2s;
+    }
+    .cert-card:hover { border-color: var(--accent2); }
+    .cert-badge {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .cert-info h4 { font-size: 0.9rem; font-weight: 600; color: #fff; }
+    .cert-info p { font-size: 0.75rem; color: var(--muted); font-family: var(--mono); }
+
+    /* ── Homelab ── */
+    #homelab { border-top: 1px solid var(--border); }
+    .terminal {
+      background: #050a0f;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      font-family: var(--mono);
+    }
+    .terminal-bar {
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot.r { background: #ff5f57; }
+    .dot.y { background: #febc2e; }
+    .dot.g { background: #28c840; }
+    .terminal-title { font-size: 0.72rem; color: var(--muted); margin-left: auto; margin-right: auto; letter-spacing: 0.1em; }
+    .terminal-body { padding: 1.5rem; font-size: 0.82rem; line-height: 2; }
+    .t-line { display: flex; gap: 0.75rem; }
+    .t-prompt { color: var(--accent2); white-space: nowrap; }
+    .t-cmd { color: #fff; }
+    .t-out { color: var(--muted); padding-left: 1.5rem; }
+    .t-out strong { color: var(--accent); }
+
+    /* ── Goals / Timeline ── */
+    #goals { border-top: 1px solid var(--border); }
+    .timeline { position: relative; padding-left: 2rem; }
+    .timeline::before {
+      content: '';
+      position: absolute; left: 0; top: 0; bottom: 0; width: 1px;
+      background: linear-gradient(var(--accent), transparent);
+    }
+    .tl-item {
+      position: relative;
+      padding-bottom: 2.5rem;
+    }
+    .tl-item::before {
+      content: '';
+      position: absolute; left: -2.4rem; top: 0.35rem;
+      width: 10px; height: 10px; border-radius: 50%;
+      border: 2px solid var(--accent);
+      background: var(--bg);
+    }
+    .tl-item.done::before { background: var(--accent); }
+    .tl-item.active::before { background: var(--accent2); border-color: var(--accent2); box-shadow: 0 0 0 4px rgba(0,255,157,0.15); }
+    .tl-date {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      margin-bottom: 0.3rem;
+    }
+    .tl-item h4 { font-size: 1rem; color: #fff; font-weight: 600; margin-bottom: 0.4rem; }
+    .tl-item p { font-size: 0.85rem; color: var(--muted); line-height: 1.7; }
+
+    /* ── Contact ── */
+    #contact {
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+    #contact h2 { margin-bottom: 1rem; }
+    #contact p { color: var(--muted); max-width: 480px; margin: 0 auto 2rem; line-height: 1.8; }
+    .contact-links { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+
+    /* ── Footer ── */
+    footer {
+      position: relative; z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 2.5rem;
+      text-align: center;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    /* ── Glitch on hero h1 ── */
+    @keyframes glitch {
+      0%,100% { clip-path: none; transform: none; }
+      5% { clip-path: inset(20% 0 50% 0); transform: translate(-3px,0); }
+      10% { clip-path: inset(60% 0 10% 0); transform: translate(3px,0); }
+      15% { clip-path: none; transform: none; }
+    }
+    h1:hover { animation: glitch 0.4s steps(1) forwards; }
+
+    /* ── Fade-in on scroll ── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-in.visible { opacity: 1; transform: none; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">// <span>sec</span>journey.sh</div>
+  <ul class="nav-links">
+    <li><a href="#about">about</a></li>
+    <li><a href="#skills">skills</a></li>
+    <li><a href="#certs">certs</a></li>
+    <li><a href="#homelab">homelab</a></li>
+    <li><a href="#goals">goals</a></li>
+    <li><a href="#contact">contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">Aspiring penetration tester</div>
+    <h1>Learning to<br><em>break things</em><br>ethically.<span class="cursor"></span></h1>
+    <p class="hero-desc">
+      No formal tech job — yet. But a homelab full of experiments, IronCircle certifications earned through real applied labs, and a relentless drive to think like an attacker and defend what matters.
+    </p>
+    <div class="hero-cta">
+      <a href="#skills" class="btn btn-primary">View my skills</a>
+      <a href="#contact" class="btn btn-ghost">Get in touch</a>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="section-label">// about_me</div>
+    <h2>Self-taught. Hands-on. Driven.</h2>
+    <div class="about-grid fade-in">
+      <div class="about-text">
+        <p>I'm an <strong>aspiring penetration tester</strong> on a mission to break into offensive security through hard work, hands-on labs, and real-world practice — not waiting for someone to hand me an opportunity.</p>
+        <p>While I haven't held a traditional tech role, I've spent significant time <strong>building and experimenting in my homelab</strong> — running VMs, deploying SIEM tools, and simulating attacks in isolated environments. I've backed that up with <strong>IronCircle certifications</strong>, earned through applied performance-based exams, not multiple-choice tests.</p>
+        <p>My goal is clear: <strong>ethical hacking and penetration testing</strong>. I want to find the holes before the bad guys do.</p>
+      </div>
+      <div class="about-stats">
+        <div class="stat-card">
+          <div class="stat-num">3+</div>
+          <div class="stat-label">Certifications earned or in progress</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">1yr+</div>
+          <div class="stat-label">Active homelab experience</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">100+</div>
+          <div class="stat-label">Hours of self-study & labs</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">0→∞</div>
+          <div class="stat-label">Starting from scratch, aiming high</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="container">
+    <div class="section-label">// technical_skills</div>
+    <h2>What I know &amp; what I'm building.</h2>
+    <div class="skills-grid fade-in">
+
+      <div class="skill-card">
+        <div class="skill-icon">🖥️</div>
+        <h3>Virtualization &amp; Systems</h3>
+        <p>Hands-on experience deploying and managing virtual machines with Proxmox and VMware, setting up isolated attack/defense labs, and managing Linux and Windows environments.</p>
+        <div class="skill-tags">
+          <span class="tag green">Proxmox</span>
+          <span class="tag green">VMware</span>
+          <span class="tag green">Linux</span>
+          <span class="tag green">Windows Server</span>
+        </div>
+      </div>
+
+      <div class="skill-card">
+        <div class="skill-icon">📡</div>
+        <h3>SIEM &amp; Log Monitoring</h3>
+        <p>Set up and operated SIEM tools in my homelab for log aggregation, alerting, and detection — giving me insight into what attacks look like from both sides of the wire.</p>
+        <div class="skill-tags">
+          <span class="tag orange">SIEM</span>
+          <span class="tag orange">Log Analysis</span>
+          <span class="tag orange">Wazuh</span>
+          <span class="tag orange">Alerting</span>
+        </div>
+      </div>
+
+      <div class="skill-card">
+        <div class="skill-icon">⚔️</div>
+        <h3>Offensive Security Concepts</h3>
+        <p>Studying and practicing core pen testing methodology: reconnaissance, enumeration, exploitation, and post-exploitation — through IronCircle labs and self-directed research.</p>
+        <div class="skill-tags">
+          <span class="tag">Recon</span>
+          <span class="tag">Enumeration</span>
+          <span class="tag">Exploitation</span>
+          <span class="tag">OWASP</span>
+        </div>
+      </div>
+
+      <div class="skill-card">
+        <div class="skill-icon">🌐</div>
+        <h3>Networking Fundamentals</h3>
+        <p>Solid grasp of TCP/IP, DNS, DHCP, VLANs, and subnetting — built through both study and real hands-on homelab configuration. Understanding networks is essential to breaking them.</p>
+        <div class="skill-tags">
+          <span class="tag">TCP/IP</span>
+          <span class="tag">VLANs</span>
+          <span class="tag">Subnetting</span>
+          <span class="tag">DNS</span>
+        </div>
+      </div>
+
+      <div class="skill-card">
+        <div class="skill-icon">🔬</div>
+        <h3>Hands-On Lab Practice</h3>
+        <p>Actively working through IronCircle's performance-based labs and offensive security scenarios — assessed on what I can actually do, not just what I can memorize.</p>
+        <div class="skill-tags">
+          <span class="tag green">IronCircle</span>
+          <span class="tag green">Applied Labs</span>
+          <span class="tag green">Scenario Exams</span>
+        </div>
+      </div>
+
+      <div class="skill-card">
+        <div class="skill-icon">💻</div>
+        <h3>Command Line &amp; Scripting</h3>
+        <p>Comfortable in Bash and PowerShell for system tasks, log parsing, and basic automation — the foundation for every offensive and defensive tool in the field.</p>
+        <div class="skill-tags">
+          <span class="tag">Bash</span>
+          <span class="tag">PowerShell</span>
+          <span class="tag">CLI tools</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CERTS -->
+<section id="certs">
+  <div class="container">
+    <div class="section-label">// certifications</div>
+    <h2>Credentials &amp; education.</h2>
+    <div class="certs-list fade-in">
+
+      <div class="cert-card">
+        <div class="cert-badge">🔴</div>
+        <div class="cert-info">
+          <h4>IronCircle Certified Cybersecurity Associate</h4>
+          <p>IronCircle — Performance-Based</p>
+        </div>
+      </div>
+
+      <div class="cert-card">
+        <div class="cert-badge">⚔️</div>
+        <div class="cert-info">
+          <h4>IronCircle Cyber Offense Track</h4>
+          <p>IronCircle — Applied Labs &amp; Exam</p>
+        </div>
+      </div>
+
+      <div class="cert-card">
+        <div class="cert-badge">🏆</div>
+        <div class="cert-info">
+          <h4>IronCircle Microcredentials</h4>
+          <p>Foundations · Systems · Operations</p>
+        </div>
+      </div>
+
+      <div class="cert-card">
+        <div class="cert-badge">🖥️</div>
+        <div class="cert-info">
+          <h4>Homelab &amp; Self-Study</h4>
+          <p>Proxmox · VMware · SIEM · VMs</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- HOMELAB -->
+<section id="homelab">
+  <div class="container">
+    <div class="section-label">// homelab</div>
+    <h2>Where the real learning happens.</h2>
+    <div class="terminal fade-in">
+      <div class="terminal-bar">
+        <div class="dot r"></div>
+        <div class="dot y"></div>
+        <div class="dot g"></div>
+        <div class="terminal-title">homelab-overview.sh</div>
+      </div>
+      <div class="terminal-body">
+        <div class="t-line"><span class="t-prompt">user@homelab:~$</span><span class="t-cmd">cat infrastructure.txt</span></div>
+        <div class="t-out">► <strong>Hypervisor:</strong> Proxmox VE + VMware — isolated VMs for attack &amp; defense scenarios</div>
+        <div class="t-out">► <strong>OS Lab:</strong> Kali Linux, Ubuntu Server, Windows Server (AD configured)</div>
+        <div class="t-out">► <strong>Monitoring:</strong> SIEM stack for log ingestion, alerting, and detection tuning</div>
+        <br>
+        <div class="t-line"><span class="t-prompt">user@homelab:~$</span><span class="t-cmd">ls projects/</span></div>
+        <div class="t-out">► <strong>SIEM Deployment:</strong> Stood up log collection and built custom detection rules</div>
+        <div class="t-out">► <strong>Attack Simulation:</strong> Ran offensive scenarios in isolated VMs, monitored detections</div>
+        <div class="t-out">► <strong>AD Lab:</strong> Built Active Directory environment to study privilege escalation paths</div>
+        <div class="t-out">► <strong>VM Snapshots:</strong> Rollback-ready lab for repeatable exploit practice</div>
+        <br>
+        <div class="t-line"><span class="t-prompt">user@homelab:~$</span><span class="t-cmd">echo "Think like an attacker."</span></div>
+        <div class="t-out">Think like an attacker.<span class="cursor"></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GOALS / TIMELINE -->
+<section id="goals">
+  <div class="container">
+    <div class="section-label">// roadmap</div>
+    <h2>The journey so far — and ahead.</h2>
+    <div class="timeline fade-in">
+
+      <div class="tl-item done">
+        <div class="tl-date">COMPLETED</div>
+        <h4>Built the homelab</h4>
+        <p>Stood up Proxmox and VMware environments, deployed a SIEM stack, and created isolated VM labs for hands-on offensive and defensive practice.</p>
+      </div>
+
+      <div class="tl-item done">
+        <div class="tl-date">COMPLETED</div>
+        <h4>Earned IronCircle certifications</h4>
+        <p>Completed IronCircle's performance-based cybersecurity program — assessed through applied labs and scenario-driven exams, not multiple-choice tests.</p>
+      </div>
+
+      <div class="tl-item active">
+        <div class="tl-date">IN PROGRESS</div>
+        <h4>Deepening offensive security skills</h4>
+        <p>Actively studying pen testing methodology — recon, enumeration, exploitation, post-exploitation — and building a portfolio of lab write-ups and documented findings.</p>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-date">NEXT UP</div>
+        <h4>Land first security or IT role</h4>
+        <p>Targeting Junior Penetration Tester, Security Analyst, or IT support roles where I can contribute immediately and keep growing toward offensive security.</p>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-date">FUTURE</div>
+        <h4>eJPT → eCPPT → OSCP</h4>
+        <p>A clear cert roadmap aimed at the gold standard in offensive security. Each step builds real technical depth, not just badge collecting.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <div class="section-label">// contact</div>
+    <h2>Let's connect.</h2>
+    <p>I'm actively looking for entry-level opportunities, internships, or mentorship. If you're hiring or just want to talk security, I'd love to hear from you.</p>
+    <div class="contact-links">
+      <a href="https://linkedin.com" class="btn btn-primary" target="_blank">LinkedIn</a>
+      <a href="https://github.com" class="btn btn-ghost" target="_blank">GitHub</a>
+      <a href="mailto:your@email.com" class="btn btn-ghost">Email Me</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>Built with curiosity & caffeine — </span>
+  <span style="color: var(--accent);">always learning, never stopping.</span>
+</footer>
+
+<script>
+  // Fade-in on scroll
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
