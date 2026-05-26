@@ -61,7 +61,7 @@
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       display: flex; align-items: center; justify-content: space-between;
       padding: 1rem 2.5rem;
-      background: rgba(8,12,16,0.85);
+      background: rgba(8,12,16,0.92);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
     }
@@ -82,6 +82,61 @@
       transition: color 0.2s;
     }
     .nav-links a:hover { color: var(--accent); }
+
+    /* ── Hamburger ── */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      z-index: 110;
+    }
+    .hamburger span {
+      display: block;
+      width: 24px; height: 2px;
+      background: var(--accent);
+      border-radius: 2px;
+      transition: transform 0.3s, opacity 0.3s;
+      transform-origin: center;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 57px; left: 0; right: 0;
+      background: rgba(8,12,16,0.97);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(16px);
+      z-index: 99;
+      padding: 1rem 2.5rem 2rem;
+      flex-direction: column;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu li { list-style: none; border-bottom: 1px solid var(--border); }
+    .mobile-menu li:last-child { border-bottom: none; }
+    .mobile-menu a {
+      display: block;
+      font-family: var(--mono);
+      font-size: 0.95rem;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      padding: 1rem 0;
+      transition: color 0.2s, padding-left 0.2s;
+    }
+    .mobile-menu a:hover, .mobile-menu a:active { color: var(--accent); padding-left: 0.5rem; }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+    }
 
     /* ── Sections ── */
     section { position: relative; z-index: 1; }
@@ -412,7 +467,20 @@
     <li><a href="#goals">goals</a></li>
     <li><a href="#contact">contact</a></li>
   </ul>
+  <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+
+<!-- MOBILE MENU -->
+<ul class="mobile-menu" id="mobileMenu">
+  <li><a href="#about">about</a></li>
+  <li><a href="#skills">skills</a></li>
+  <li><a href="#certs">certs</a></li>
+  <li><a href="#homelab">homelab</a></li>
+  <li><a href="#goals">goals</a></li>
+  <li><a href="#contact">contact</a></li>
+</ul>
 
 <!-- HERO -->
 <section id="hero">
@@ -553,32 +621,32 @@
       <div class="cert-card">
         <div class="cert-badge">🔴</div>
         <div class="cert-info">
-          <h4>IronCircle Certified Cybersecurity Associate</h4>
-          <p>IronCircle — Performance-Based</p>
-        </div>
-      </div>
-
-      <div class="cert-card">
-        <div class="cert-badge">⚔️</div>
-        <div class="cert-info">
-          <h4>IronCircle Cyber Offense Track</h4>
-          <p>IronCircle — Applied Labs &amp; Exam</p>
+          <h4>Certified Cybersecurity Analyst</h4>
+          <p>IronCircle — Earned</p>
         </div>
       </div>
 
       <div class="cert-card">
         <div class="cert-badge">🏆</div>
         <div class="cert-info">
-          <h4>IronCircle Microcredentials</h4>
-          <p>Foundations · Systems · Operations</p>
+          <h4>Certified Cybersecurity Associate</h4>
+          <p>IronCircle — Earned</p>
         </div>
       </div>
 
       <div class="cert-card">
-        <div class="cert-badge">🖥️</div>
+        <div class="cert-badge">📡</div>
         <div class="cert-info">
-          <h4>Homelab &amp; Self-Study</h4>
-          <p>Proxmox · VMware · SIEM · VMs</p>
+          <h4>Certified SOC Analyst</h4>
+          <p>IronCircle — Earned</p>
+        </div>
+      </div>
+
+      <div class="cert-card" style="border-color: rgba(255,107,53,0.4);">
+        <div class="cert-badge" style="background: linear-gradient(135deg, #ff6b35, #febc2e);">⏳</div>
+        <div class="cert-info">
+          <h4>CompTIA Security+</h4>
+          <p style="color: #ff6b35;">In Progress</p>
         </div>
       </div>
 
@@ -633,13 +701,13 @@
       <div class="tl-item done">
         <div class="tl-date">COMPLETED</div>
         <h4>Earned IronCircle certifications</h4>
-        <p>Completed IronCircle's performance-based cybersecurity program — assessed through applied labs and scenario-driven exams, not multiple-choice tests.</p>
+        <p>Completed three IronCircle performance-based certifications: Certified Cybersecurity Associate, Certified Cybersecurity Analyst, and Certified SOC Analyst — all assessed through applied labs, not multiple-choice tests.</p>
       </div>
 
       <div class="tl-item active">
         <div class="tl-date">IN PROGRESS</div>
-        <h4>Deepening offensive security skills</h4>
-        <p>Actively studying pen testing methodology — recon, enumeration, exploitation, post-exploitation — and building a portfolio of lab write-ups and documented findings.</p>
+        <h4>CompTIA Security+ &amp; offensive skills</h4>
+        <p>Currently studying for Security+ to solidify my security fundamentals, while continuing to build practical pen testing skills through homelab practice and applied labs.</p>
       </div>
 
       <div class="tl-item">
@@ -683,6 +751,21 @@
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.1 });
   document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  // Hamburger menu
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobileMenu');
+  hamburger.addEventListener('click', () => {
+    hamburger.classList.toggle('open');
+    mobileMenu.classList.toggle('open');
+  });
+  // Close menu when a link is tapped
+  mobileMenu.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      hamburger.classList.remove('open');
+      mobileMenu.classList.remove('open');
+    });
+  });
 </script>
 
 </body>
