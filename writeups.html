@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CTF Write-Ups | CyberSec Journey</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #080c10;
+      --surface: #0d1520;
+      --border: #1a2e44;
+      --accent: #00d4ff;
+      --accent2: #00ff9d;
+      --warn: #ff6b35;
+      --text: #c8d8e8;
+      --muted: #506070;
+      --mono: 'Share Tech Mono', monospace;
+      --sans: 'Inter', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.6; overflow-x: hidden; }
+
+    body::before {
+      content: ''; position: fixed; inset: 0; z-index: 9999;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,212,255,0.015) 2px, rgba(0,212,255,0.015) 4px);
+      pointer-events: none;
+    }
+    body::after {
+      content: ''; position: fixed; inset: 0; z-index: 0;
+      background-image: linear-gradient(rgba(0,212,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,0.04) 1px, transparent 1px);
+      background-size: 40px 40px; pointer-events: none;
+    }
+
+    /* ── Nav (exact match) ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 2.5rem;
+      background: rgba(8,12,16,0.92); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { font-family: var(--mono); color: var(--accent); font-size: 0.85rem; letter-spacing: 0.1em; text-decoration: none; }
+    .nav-logo span { color: var(--accent2); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a { font-family: var(--mono); font-size: 0.78rem; color: var(--muted); text-decoration: none; letter-spacing: 0.08em; transition: color 0.2s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--accent); }
+
+    .hamburger { display: none; flex-direction: column; justify-content: center; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; z-index: 110; }
+    .hamburger span { display: block; width: 24px; height: 2px; background: var(--accent); border-radius: 2px; transition: transform 0.3s, opacity 0.3s; transform-origin: center; }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-menu { display: none; position: fixed; top: 57px; left: 0; right: 0; background: rgba(8,12,16,0.97); border-bottom: 1px solid var(--border); backdrop-filter: blur(16px); z-index: 99; padding: 1rem 2.5rem 2rem; flex-direction: column; }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu li { list-style: none; border-bottom: 1px solid var(--border); }
+    .mobile-menu li:last-child { border-bottom: none; }
+    .mobile-menu a { display: block; font-family: var(--mono); font-size: 0.95rem; color: var(--muted); text-decoration: none; letter-spacing: 0.1em; padding: 1rem 0; transition: color 0.2s, padding-left 0.2s; }
+    .mobile-menu a:hover, .mobile-menu a:active { color: var(--accent); padding-left: 0.5rem; }
+
+    @media (max-width: 768px) { .nav-links { display: none; } .hamburger { display: flex; } }
+
+    /* ── Page header matches section style ── */
+    section { position: relative; z-index: 1; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 5rem 2.5rem; }
+    .section-label { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.2em; color: var(--accent); text-transform: uppercase; margin-bottom: 0.5rem; }
+    h2 { font-size: clamp(1.8rem, 3.5vw, 2.6rem); font-weight: 800; color: #fff; margin-bottom: 3rem; line-height: 1.15; }
+
+    /* ── Write-up cards matching skill-card style ── */
+    .writeups-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .writeup-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex; flex-direction: column;
+      transition: border-color 0.25s, transform 0.25s;
+    }
+    .writeup-card:hover { border-color: var(--accent); transform: translateY(-3px); }
+
+    .card-body { padding: 1.5rem; flex: 1; }
+
+    .card-meta {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+    .card-platform {
+      font-family: var(--mono); font-size: 0.65rem;
+      letter-spacing: 0.12em; color: var(--accent2); text-transform: uppercase;
+    }
+    .card-num { font-family: var(--mono); font-size: 0.65rem; color: var(--muted); }
+
+    .card-title { font-size: 1rem; font-weight: 600; color: #fff; margin-bottom: 0.5rem; line-height: 1.3; }
+    .card-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.7; margin-bottom: 0.85rem; }
+
+    .card-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .tag { font-family: var(--mono); font-size: 0.68rem; padding: 0.25rem 0.6rem; border-radius: 3px; background: rgba(0,212,255,0.08); color: var(--accent); border: 1px solid rgba(0,212,255,0.2); letter-spacing: 0.05em; }
+    .tag.green { background: rgba(0,255,157,0.08); color: var(--accent2); border-color: rgba(0,255,157,0.2); }
+    .tag.orange { background: rgba(255,107,53,0.08); color: var(--warn); border-color: rgba(255,107,53,0.2); }
+
+    .card-footer {
+      border-top: 1px solid var(--border);
+      padding: 1rem 1.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .diff { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.08em; }
+    .diff-hard { color: var(--warn); }
+    .diff-medium { color: #f0c040; }
+    .diff-easy { color: var(--accent2); }
+
+    .read-btn {
+      font-family: var(--mono); font-size: 0.72rem; color: var(--accent);
+      text-decoration: none; letter-spacing: 0.08em;
+      display: flex; align-items: center; gap: 0.4rem;
+      transition: gap 0.2s;
+    }
+    .read-btn:hover { gap: 0.7rem; }
+    .read-btn::after { content: '→'; }
+
+    /* ── Glitch on h1 ── */
+    @keyframes glitch {
+      0%,100% { clip-path: none; transform: none; }
+      5% { clip-path: inset(20% 0 50% 0); transform: translate(-3px,0); }
+      10% { clip-path: inset(60% 0 10% 0); transform: translate(3px,0); }
+      15% { clip-path: none; transform: none; }
+    }
+
+    .fade-in { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .fade-in.visible { opacity: 1; transform: none; }
+
+    footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 1.5rem 2.5rem; text-align: center; font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">// <span>sec</span>journey.sh</a>
+  <ul class="nav-links">
+    <li><a href="index.html#about">about</a></li>
+    <li><a href="index.html#skills">skills</a></li>
+    <li><a href="index.html#certs">certs</a></li>
+    <li><a href="index.html#homelab">homelab</a></li>
+    <li><a href="index.html#goals">goals</a></li>
+    <li><a href="writeups.html" class="active">write-ups</a></li>
+    <li><a href="index.html#contact">contact</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<ul class="mobile-menu" id="mobileMenu">
+  <li><a href="index.html#about">about</a></li>
+  <li><a href="index.html#skills">skills</a></li>
+  <li><a href="index.html#certs">certs</a></li>
+  <li><a href="index.html#homelab">homelab</a></li>
+  <li><a href="index.html#goals">goals</a></li>
+  <li><a href="writeups.html">write-ups</a></li>
+  <li><a href="index.html#contact">contact</a></li>
+</ul>
+
+<!-- WRITE-UPS SECTION -->
+<section id="writeups" style="padding-top: 5rem;">
+  <div class="container">
+    <div class="section-label">// ctf_writeups</div>
+    <h2>Lab write-ups &amp; <span style="color: var(--accent);">findings.</span></h2>
+
+    <div class="writeups-grid fade-in">
+
+      <!-- #1 Phantom Capital — Hardest -->
+      <div class="writeup-card">
+        <div class="card-body">
+          <div class="card-meta">
+            <span class="card-platform">IronCircle</span>
+            <span class="card-num">#001</span>
+          </div>
+          <div class="card-title">Phantom Capital Breach</div>
+          <div class="card-desc">Full DFIR investigation reconstructing a simulated breach involving brute force, NTLM authentication, PsExec execution, lateral movement, and database exfiltration using Splunk.</div>
+          <div class="card-tags">
+            <span class="tag">Splunk</span>
+            <span class="tag">DFIR</span>
+            <span class="tag orange">Lateral Movement</span>
+            <span class="tag orange">Exfiltration</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="diff diff-hard">● Hard</span>
+          <a href="https://github.com/austinprairie/Austinprairie/blob/writeups/AustinPrairiePhantomCapitalBreach.pdf" class="read-btn" target="_blank">Read Write-Up</a>
+        </div>
+      </div>
+
+      <!-- #2 Blindspot Breach -->
+      <div class="writeup-card">
+        <div class="card-body">
+          <div class="card-meta">
+            <span class="card-platform">IronCircle</span>
+            <span class="card-num">#002</span>
+          </div>
+          <div class="card-title">Blindspot Breach</div>
+          <div class="card-desc">Security investigation focused on identifying attacker blind spots in detection coverage and uncovering how the breach went undetected through gaps in monitoring.</div>
+          <div class="card-tags">
+            <span class="tag">Detection Gaps</span>
+            <span class="tag orange">Threat Hunting</span>
+            <span class="tag">Log Analysis</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="diff diff-hard">● Hard</span>
+          <a href="https://github.com/austinprairie/Austinprairie/blob/writeups/Blindspot_Breach_Austin_Prairie.pdf" class="read-btn" target="_blank">Read Write-Up</a>
+        </div>
+      </div>
+
+      <!-- #3 Triage Assessment -->
+      <div class="writeup-card">
+        <div class="card-body">
+          <div class="card-meta">
+            <span class="card-platform">IronCircle</span>
+            <span class="card-num">#003</span>
+          </div>
+          <div class="card-title">Triage Assessment</div>
+          <div class="card-desc">Incident triage exercise focused on rapidly assessing and prioritizing security events, identifying the scope of compromise, and determining immediate response actions.</div>
+          <div class="card-tags">
+            <span class="tag">Incident Response</span>
+            <span class="tag orange">Triage</span>
+            <span class="tag">SOC</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="diff diff-hard">● Hard</span>
+          <a href="https://github.com/austinprairie/Austinprairie/blob/writeups/Triage_Assessment_Austin_Prairie.pdf" class="read-btn" target="_blank">Read Write-Up</a>
+        </div>
+      </div>
+
+      <!-- #4 Tunnel Vision -->
+      <div class="writeup-card">
+        <div class="card-body">
+          <div class="card-meta">
+            <span class="card-platform">IronCircle</span>
+            <span class="card-num">#004</span>
+          </div>
+          <div class="card-title">Tunnel Vision</div>
+          <div class="card-desc">Investigation into covert tunneling techniques used by an attacker to exfiltrate data or maintain persistence while evading standard network monitoring tools.</div>
+          <div class="card-tags">
+            <span class="tag">Network Tunneling</span>
+            <span class="tag orange">Evasion</span>
+            <span class="tag">Traffic Analysis</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="diff diff-medium">● Medium</span>
+          <a href="https://github.com/austinprairie/Austinprairie/blob/writeups/Austin%20Prairie%20Tunnel%20vision.pdf" class="read-btn" target="_blank">Read Write-Up</a>
+        </div>
+      </div>
+
+      <!-- #5 Crontact Established -->
+      <div class="writeup-card">
+        <div class="card-body">
+          <div class="card-meta">
+            <span class="card-platform">IronCircle</span>
+            <span class="card-num">#005</span>
+          </div>
+          <div class="card-title">Crontact Established</div>
+          <div class="card-desc">Analysis of attacker persistence through malicious cron job implantation, tracing how scheduled tasks were leveraged to maintain access across reboots and evade detection.</div>
+          <div class="card-tags">
+            <span class="tag">Persistence</span>
+            <span class="tag green">Cron Jobs</span>
+            <span class="tag">Linux</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="diff diff-medium">● Medium</span>
+          <a href="https://github.com/austinprairie/Austinprairie/blob/writeups/Case_Crontact_Established.pdf" class="read-btn" target="_blank">Read Write-Up</a>
+        </div>
+      </div>
+
+      <!-- #6 Prompt Injection -->
+      <div class="writeup-card">
+        <div class="card-body">
+          <div class="card-meta">
+            <span class="card-platform">IronCircle</span>
+            <span class="card-num">#006</span>
+          </div>
+          <div class="card-title">Prompt Injection</div>
+          <div class="card-desc">Exploration of prompt injection attack techniques targeting AI-integrated systems, demonstrating how crafted inputs can manipulate model behavior and bypass security controls.</div>
+          <div class="card-tags">
+            <span class="tag">AI Security</span>
+            <span class="tag green">Prompt Injection</span>
+            <span class="tag">Web</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="diff diff-medium">● Medium</span>
+          <a href="https://github.com/austinprairie/Austinprairie/blob/writeups/Austin_Prairie_Prompt_Injection.pdf" class="read-btn" target="_blank">Read Write-Up</a>
+        </div>
+      </div>
+
+      <!-- #7 Mail n Trail -->
+      <div class="writeup-card">
+        <div class="card-body">
+          <div class="card-meta">
+            <span class="card-platform">IronCircle</span>
+            <span class="card-num">#007</span>
+          </div>
+          <div class="card-title">Mail n Trail</div>
+          <div class="card-desc">Email-based threat investigation tracing phishing or malicious email activity through mail logs and headers to identify the attack vector, sender origin, and downstream impact.</div>
+          <div class="card-tags">
+            <span class="tag green">Email Forensics</span>
+            <span class="tag">Phishing</span>
+            <span class="tag">Log Analysis</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="diff diff-easy">● Easy</span>
+          <a href="https://github.com/austinprairie/Austinprairie/blob/writeups/Austin_Prairie_MailnTrail.pdf" class="read-btn" target="_blank">Read Write-Up</a>
+        </div>
+      </div>
+
+      <!-- #8 Brute Force -->
+      <div class="writeup-card">
+        <div class="card-body">
+          <div class="card-meta">
+            <span class="card-platform">IronCircle</span>
+            <span class="card-num">#008</span>
+          </div>
+          <div class="card-title">Brute Force Attack</div>
+          <div class="card-desc">Detection and analysis of a brute force attack against a target system, covering authentication log review, attacker patterns, and identifying the point of successful compromise.</div>
+          <div class="card-tags">
+            <span class="tag green">Brute Force</span>
+            <span class="tag">Auth Logs</span>
+            <span class="tag">Detection</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="diff diff-easy">● Easy</span>
+          <a href="https://github.com/austinprairie/Austinprairie/blob/writeups/Case%20Brute%20force%20attack.pdf" class="read-btn" target="_blank">Read Write-Up</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>Built with curiosity & caffeine — </span>
+  <span style="color: var(--accent);">always learning, never stopping.</span>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobileMenu');
+  hamburger.addEventListener('click', () => {
+    hamburger.classList.toggle('open');
+    mobileMenu.classList.toggle('open');
+  });
+  mobileMenu.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      hamburger.classList.remove('open');
+      mobileMenu.classList.remove('open');
+    });
+  });
+</script>
+
+</body>
+</html>
